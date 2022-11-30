@@ -9,7 +9,10 @@ try{
     await mongoClient.connect();
     console.log("MongoDB working...");
 } catch (err){
-    console.error(err);
+    console.log(err);
 }
 
 const db = mongoClient.db("drivencracy");
+export const pollCollection = db.collection("poll");
+export const choiceCollection = db.collection("choice");
+export const votesCollection = db.collection("votes");
