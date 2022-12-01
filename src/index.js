@@ -8,6 +8,7 @@ import joi from "joi"
 dotenv.config()
 
 import pollRouter from "./routes/pollRoutes.js"
+import choiceRouter from "./routes/choiceRoutes.js"
 
 const app = express()
 app.use(cors())
@@ -15,6 +16,7 @@ app.use(express.json())
 
 app.use(router)
 app.use(pollRouter)
+app.use(choiceRouter)
 
 
 const port = process.env.PORT || 5000
