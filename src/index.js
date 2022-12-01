@@ -9,6 +9,7 @@ dotenv.config()
 
 import pollRouter from "./routes/pollRoutes.js"
 import choiceRouter from "./routes/choiceRoutes.js"
+import voteRouter from "./routes/voteRoutes.js"
 
 const app = express()
 app.use(cors())
@@ -17,7 +18,7 @@ app.use(express.json())
 app.use(router)
 app.use(pollRouter)
 app.use(choiceRouter)
-
+app.use(voteRouter)
 
 const port = process.env.PORT || 5000
 app.listen(port, () => 
