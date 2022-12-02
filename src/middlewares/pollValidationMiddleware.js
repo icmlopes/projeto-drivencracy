@@ -1,22 +1,34 @@
+import dayjs from "dayjs";
 import { pollSchema } from "../model/pollModel.js"
-import dayjs from 'dayjs';
+import moment from "moment"
+
 
 export function pollSchemaValidation(req, res, next) {
-    const { title, expireAt} = req.body;
 
-    const createPoll = {
-        title,
-        expireAt: dayjs().format("YYYY-MM-DD HH:mm"),
-    }
+    const poll = req.body;
 
-    const { error } = pollSchema.validate(createPoll, { abortEarly: false })
+    const { error } = pollSchema.validate(poll, { abortEarly: false })
 
     if (error) {
         const errors =  error.details.map((detail) => detail.message);
         return res.status(422).send(errors)
     }
-
-    // req.createPoll = createPoll;
     
     next()
+}
+
+export function dateValidation(req, res, next) {
+
+    const poll = req.body
+    console.log(dayjs())
+
+    let isSameOrBefore = moment(dayjs(new Date())).isSameOrBefore(poll.expireAt)
+
+    console.log(isSameOrBefore)
+
+    if ( isSameOrBefore === false ) {
+        return res.status(403).send("Essa enquete já expirou!")
+    }
+
+    next()    
 }
