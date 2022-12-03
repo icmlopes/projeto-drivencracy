@@ -1,7 +1,7 @@
-import { choiceCollection, pollCollection, votesCollection }  from "../database/db.js"
+import { choiceCollection, pollCollection, votesCollection } from "../database/db.js"
 import dayjs from "dayjs";
-import { ObjectId } from "mongodb";
-import moment from  "moment";
+import { ObjectID, ObjectId } from "mongodb";
+import moment from "moment";
 
 export async function postVoteById(req, res) {
 
@@ -15,15 +15,15 @@ export async function postVoteById(req, res) {
             return res.status(404).send("Id de choice não válido.")
         }
 
-        const existingPoll =  await pollCollection.findOne({_id: ObjectId(existingChoices.pollId)})
+        const existingPoll = await pollCollection.findOne({ _id: ObjectId(existingChoices.pollId) })
 
         const currentDate = dayjs(new Date()).format("YYYY-MM-DD HH:mm")
-  
+
         let isSameOrBefore = moment(currentDate).isSameOrBefore(existingPoll.expireAt)
 
         console.log(isSameOrBefore)
 
-        if ( isSameOrBefore === false ) {
+        if (isSameOrBefore === false) {
             return res.status(403).send("Essa enquete já expirou!")
         }
 
@@ -39,6 +39,55 @@ export async function postVoteById(req, res) {
         console.log(err);
         res.status(400)
     }
+}
 
-    return res.sendStatus(201)
+export async function showResults(req, res, next) {
+
+    const pollId = req.params.id
+
+    try {
+
+        
+
+        const poll = await pollCollection.findOne({ _id: ObjectId(pollId) })
+
+        if(!poll){
+            return res.status(404).send("Enquete inexistente!")
+        }
+
+        const choices = await choiceCollection.find({ pollId }).toArray()
+
+        console.log(choices)
+
+        let votes = 0
+        let mostVoted = 0
+        let mostVotedChoice = ""
+
+        for (let i = 0; i < choices.length; i++) {
+
+            votes = await votesCollection.find({ choiceId: choices[i]._id.toString() }).toArray()
+
+            if (votes.length > mostVoted) {
+                mostVoted = votes.length
+                mostVotedChoice = choices[i].title
+            }
+            
+        }
+
+        const resultBody = {
+            _id: poll._id,
+            title: poll.title,
+            expireAt: poll.expireAt,
+            results: {
+                title: mostVotedChoice,
+                votes: mostVoted
+            }
+        }
+
+        res.status(200).send(resultBody)
+
+    } catch (err) {
+        console.log(err);
+        res.status(400)
+    }
 }
