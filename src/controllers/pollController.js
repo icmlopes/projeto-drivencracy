@@ -7,7 +7,6 @@ export async function postPoll(req, res) {
 
     if( !poll.expireAt ){
         const date = dayjs().add(30, 'day').format("YYYY-MM-DD HH:mm")
-        console.log(date)
         poll.expireAt = date
     }
 

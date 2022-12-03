@@ -15,12 +15,10 @@ export async function choiceSchemaValidation(req, res, next) {
         return res.status(422).send(errors)
     }
 
-    // {_id: objectId(pollId)}
-
     const existingPoll = await pollCollection.findOne({ _id: new ObjectId(pollId) })
-    console.log(existingPoll)
+
     const existingChoice = await choiceCollection.findOne({title})
-    console.log(existingChoice)
+
 
     if (!existingPoll) {
         res.status(404).send("Poll não existente.")
