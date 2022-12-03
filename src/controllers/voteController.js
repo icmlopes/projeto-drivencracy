@@ -7,6 +7,10 @@ export async function postVoteById(req, res) {
 
     const choiceId = req.params.id;
 
+    if (choiceId.length !== 24){
+        return res.status(404).send("Id not supported: Argument passed in must be a string of 12 bytes or a string of 24 hex characters or an integer")
+    }
+
     try {
 
         const existingChoices = await choiceCollection.findOne({ _id: ObjectId(choiceId) })
@@ -44,7 +48,7 @@ export async function showResults(req, res, next) {
     const pollId = req.params.id
 
     if (pollId.length !== 24){
-        return res.status(404).send("Argument passed in must be a string of 12 bytes or a string of 24 hex characters or an integer")
+        return res.status(404).send("Id not supported: Argument passed in must be a string of 12 bytes or a string of 24 hex characters or an integer")
     }
 
     try {
